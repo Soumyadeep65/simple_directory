@@ -1,6 +1,7 @@
 import express from 'express';
 import axios from 'axios';
 import mongoose from 'mongoose';
+import { rateLimit } from 'express-rate-limit';
 
 
 const app = express();
@@ -8,6 +9,13 @@ const PORT = process.env.PORT || 5000;
 const API_KEY = '71f6d6491ccd8a70c189ecc6dc85548b';
 const CACHE_DURATION = 60; // Cache duration in seconds
 const cache = {}; // In-memory cache
+
+const limiter = rateLimit({
+  windowMs: 1000, // 1 second
+  max: 1000, // Maximum 1000 requests per second
+});
+
+app.use(limiter);
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/watchlist');
