@@ -61,6 +61,23 @@ CRUD endpoints for watchlist:
 -> releaseDate indicates the release date of the movie.
 -> createdAt and updatedAt track the creation and update timestamps.
 
+6) Caching Layer:
+
+-> Implement a caching layer to reduce the number of requests to The Movie DB API and improve response times.
+-> Cache movie data based on different query parameters such as page, count, sort, and query.
+-> Implement cache invalidation strategies based on data update frequency from The Movie DB API
+
+7) Load Balancer: 
+-> Use a load balancer to distribute incoming requests across multiple server instances for scalability and high availability.
+-> Configure the load balancer to handle a high volume of requests, ensuring it can handle at least 1000 requests/second.
+-> Utilize features like auto-scaling to dynamically scale the number of server instances based on the incoming traffic.
+
+8) Rate Limiting and Throttling:
+
+-> Implement rate limiting and request throttling mechanisms to control the number of requests per second and prevent rate limiting by The Movie DB.
+
+-> Adjust the rate limit settings to accommodate the desired request rate (e.g., 1000 requests/second).
+
 
 
 
