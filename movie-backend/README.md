@@ -30,6 +30,7 @@ CRUD endpoints for watchlist:
 -> GET /watchlist: Retrieve all movies in the watchlist.
 -> POST /watchlist: Add a movie to the watchlist.
 -> DELETE /watchlist/:id: Remove a movie from the watchlist.
+-> PUT /watchlist/:id: update the user's watchlist
 
 4) Backend Server Implementation:
 
