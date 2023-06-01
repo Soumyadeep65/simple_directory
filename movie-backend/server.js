@@ -1,3 +1,4 @@
+/* eslint-disable import/no-import-module-exports */
 import express from 'express';
 import axios from 'axios';
 import mongoose from 'mongoose';
@@ -210,6 +211,10 @@ app.delete('/watchlist/:id', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+const server = app.listen(PORT, () => {
+  const host = server.address().address;
+  const { port } = server.address();
+
+  console.log('App listening at http://%s:%s', host, port);
 });
+module.exports = server;
