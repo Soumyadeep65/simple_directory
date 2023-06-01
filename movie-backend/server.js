@@ -33,7 +33,15 @@ app.get('/', (req, res) => {
 // /movies get request to get a paginated, sortable list of movie objects
 
 app.get('/movies', (req, res) => {
-  const { cursor = 1, count = 20, sort = 'popularity.desc',query } = req.query;
+  let { cursor = 1, count = 20, sort = 'popularity.desc',query } = req.query;
+
+   // Validate and sanitize input
+   cursor = parseInt(cursor);
+   count = parseInt(count);
+
+   // Adjust cursor and count to retrieve the desired subset
+   const startIndex = (cursor - 1) * count;
+   const endIndex = cursor * count;
 
   const queryParams = {
     api_key: API_KEY,
@@ -49,7 +57,7 @@ app.get('/movies', (req, res) => {
   axios
     .get('https://api.themoviedb.org/3/discover/movie', { params: queryParams })
     .then(response => {
-      const movies = response.data.results.map(movie => ({
+      const movies = response.data.results.slice(startIndex, endIndex).map(movie => ({
         id: movie.id,
         title: movie.title,
         poster_path: movie.poster_path,
