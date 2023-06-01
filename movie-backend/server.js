@@ -6,7 +6,8 @@ import mongoose from 'mongoose';
 const app = express();
 const PORT = process.env.PORT || 5000;
 const API_KEY = '71f6d6491ccd8a70c189ecc6dc85548b';
-
+const CACHE_DURATION = 60; // Cache duration in seconds
+const cache = {}; // In-memory cache
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/watchlist');
@@ -39,6 +40,11 @@ app.get('/movies', (req, res) => {
    cursor = parseInt(cursor);
    count = parseInt(count);
 
+   // Generate a cache key based on the query parameters
+   const cacheKey = `${cursor}_${count}_${sort}_${query}`;
+
+
+
    // Adjust cursor and count to retrieve the desired subset
    const startIndex = (cursor - 1) * count;
    const endIndex = cursor * count;
@@ -54,6 +60,12 @@ app.get('/movies', (req, res) => {
   if (query) {
     queryParams.query = query;
   }
+
+  if (cache[cacheKey] && cache[cacheKey].expiry > Date.now()) {
+    const cachedData = cache[cacheKey].data;
+    res.json(cachedData);
+  }
+  else{
   axios
     .get('https://api.themoviedb.org/3/discover/movie', { params: queryParams })
     .then(response => {
@@ -65,12 +77,20 @@ app.get('/movies', (req, res) => {
         vote_average: movie.vote_average
       }));
 
+      // Save the data to the cache
+      cache[cacheKey] = {
+        data: movies,
+        expiry: Date.now() + CACHE_DURATION * 1000,
+      };
+
       res.json(movies);
+    
     })
     .catch(error => {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
     });
+  }
 });
 
 //  /movies/:id get request to show the details of the full movie object
