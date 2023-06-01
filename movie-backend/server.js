@@ -1,10 +1,30 @@
 import express from 'express';
 import axios from 'axios';
+import mongoose from 'mongoose';
 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const API_KEY = '71f6d6491ccd8a70c189ecc6dc85548b';
+
+
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/watchlist');
+
+// Define Movie Schema
+const movieSchema = new mongoose.Schema({
+  movieId: { type: Number, required: true },
+  title: { type: String, required: true },
+  posterPath: { type: String, required: true },
+  releaseDate: { type: Date, required: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+// Create Movie model
+const Movie = mongoose.model('Movie', movieSchema);
+
+
 
 app.get('/', (req, res) => {
   res.send('Hello from the server!');
@@ -65,6 +85,81 @@ app.get('/movies/:id', (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     });
 });
+
+// Watchlist CRUD - Store the movies added to watchlist into MongoDB
+
+// GET /watchlist
+app.get('/watchlist', (req, res) => {
+  Movie.find()
+    .sort({ createdAt: -1 })
+    .exec((err, movies) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+      res.json(movies);
+    });
+});
+
+// POST /watchlist
+app.post('/watchlist', (req, res) => {
+  const { movieId, title, posterPath, releaseDate } = req.body;
+
+  const movie = new Movie({
+    movieId,
+    title,
+    posterPath,
+    releaseDate,
+  });
+
+  movie.save((err, savedMovie) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+    res.json(savedMovie);
+  });
+});
+
+// PUT /watchlist/:id
+app.put('/watchlist/:id', (req, res) => {
+  const movieId = req.params.id;
+  const { title, posterPath, releaseDate } = req.body;
+
+  Movie.findOneAndUpdate(
+    { movieId },
+    { title, posterPath, releaseDate, updatedAt: Date.now() },
+    { new: true },
+    (err, updatedMovie) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+      if (!updatedMovie) {
+        return res.status(404).json({ error: 'Movie not found' });
+      }
+      res.json(updatedMovie);
+    }
+  );
+});
+
+// DELETE /watchlist/:id
+app.delete('/watchlist/:id', (req, res) => {
+  const movieId = req.params.id;
+
+  Movie.findOneAndDelete({ movieId }, (err, deletedMovie) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+    if (!deletedMovie) {
+      return res.status(404).json({ error: 'Movie not found' });
+    }
+    res.json({ message: 'Movie deleted successfully' });
+  });
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
