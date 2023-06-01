@@ -3,7 +3,6 @@ import axios from 'axios';
 import mongoose from 'mongoose';
 import { rateLimit } from 'express-rate-limit';
 
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 const API_KEY = '71f6d6491ccd8a70c189ecc6dc85548b';
@@ -33,8 +32,6 @@ const movieSchema = new mongoose.Schema({
 // Create Movie model
 const Movie = mongoose.model('Movie', movieSchema);
 
-
-
 app.get('/', (req, res) => {
   res.send('Hello from the server!');
 });
@@ -42,20 +39,21 @@ app.get('/', (req, res) => {
 // /movies get request to get a paginated, sortable list of movie objects
 
 app.get('/movies', (req, res) => {
-  let { cursor = 1, count = 20, sort = 'popularity.desc',query } = req.query;
+  let {
+    // eslint-disable-next-line prefer-const
+    cursor = 1, count = 20, sort = 'popularity.desc', query
+  } = req.query;
 
-   // Validate and sanitize input
-   cursor = parseInt(cursor);
-   count = parseInt(count);
+  // Validate and sanitize input
+  cursor = parseInt(cursor, 10);
+  count = parseInt(count, 10);
 
-   // Generate a cache key based on the query parameters
-   const cacheKey = `${cursor}_${count}_${sort}_${query}`;
+  // Generate a cache key based on the query parameters
+  const cacheKey = `${cursor}_${count}_${sort}_${query}`;
 
-
-
-   // Adjust cursor and count to retrieve the desired subset
-   const startIndex = (cursor - 1) * count;
-   const endIndex = cursor * count;
+  // Adjust cursor and count to retrieve the desired subset
+  const startIndex = (cursor - 1) * count;
+  const endIndex = cursor * count;
 
   const queryParams = {
     api_key: API_KEY,
@@ -72,32 +70,30 @@ app.get('/movies', (req, res) => {
   if (cache[cacheKey] && cache[cacheKey].expiry > Date.now()) {
     const cachedData = cache[cacheKey].data;
     res.json(cachedData);
-  }
-  else{
-  axios
-    .get('https://api.themoviedb.org/3/discover/movie', { params: queryParams })
-    .then(response => {
-      const movies = response.data.results.slice(startIndex, endIndex).map(movie => ({
-        id: movie.id,
-        title: movie.title,
-        poster_path: movie.poster_path,
-        release_date: movie.release_date,
-        vote_average: movie.vote_average
-      }));
+  } else {
+    axios
+      .get('https://api.themoviedb.org/3/discover/movie', { params: queryParams })
+      .then((response) => {
+        const movies = response.data.results.slice(startIndex, endIndex).map((movie) => ({
+          id: movie.id,
+          title: movie.title,
+          poster_path: movie.poster_path,
+          release_date: movie.release_date,
+          vote_average: movie.vote_average
+        }));
 
-      // Save the data to the cache
-      cache[cacheKey] = {
-        data: movies,
-        expiry: Date.now() + CACHE_DURATION * 1000,
-      };
+        // Save the data to the cache
+        cache[cacheKey] = {
+          data: movies,
+          expiry: Date.now() + CACHE_DURATION * 1000,
+        };
 
-      res.json(movies);
-    
-    })
-    .catch(error => {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    });
+        res.json(movies);
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      });
   }
 });
 
@@ -110,27 +106,26 @@ app.get('/movies/:id', (req, res) => {
   if (cache[movieId] && cache[movieId].expiry > Date.now()) {
     const cachedData = cache[movieId].data;
     res.json(cachedData);
-  }
-  else{
-  axios
-    .get(`https://api.themoviedb.org/3/movie/${movieId}`, {
-      params: {
-        api_key: API_KEY
-      }
-    })
-    .then(response => {
-      const movie = response.data;
-      // Cache the movie details
-      cache[movieId] = {
-        data: movie,
-        expiry: Date.now() + CACHE_DURATION * 1000,
-      };
-      res.json(movie);
-    })
-    .catch(error => {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    });
+  } else {
+    axios
+      .get(`https://api.themoviedb.org/3/movie/${movieId}`, {
+        params: {
+          api_key: API_KEY
+        }
+      })
+      .then((response) => {
+        const movie = response.data;
+        // Cache the movie details
+        cache[movieId] = {
+          data: movie,
+          expiry: Date.now() + CACHE_DURATION * 1000,
+        };
+        res.json(movie);
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      });
   }
 });
 
@@ -140,6 +135,7 @@ app.get('/movies/:id', (req, res) => {
 app.get('/watchlist', (req, res) => {
   Movie.find()
     .sort({ createdAt: -1 })
+    // eslint-disable-next-line consistent-return
     .exec((err, movies) => {
       if (err) {
         console.error(err);
@@ -151,7 +147,9 @@ app.get('/watchlist', (req, res) => {
 
 // POST /watchlist
 app.post('/watchlist', (req, res) => {
-  const { movieId, title, posterPath, releaseDate } = req.body;
+  const {
+    movieId, title, posterPath, releaseDate
+  } = req.body;
 
   const movie = new Movie({
     movieId,
@@ -160,6 +158,7 @@ app.post('/watchlist', (req, res) => {
     releaseDate,
   });
 
+  // eslint-disable-next-line consistent-return
   movie.save((err, savedMovie) => {
     if (err) {
       console.error(err);
@@ -176,8 +175,11 @@ app.put('/watchlist/:id', (req, res) => {
 
   Movie.findOneAndUpdate(
     { movieId },
-    { title, posterPath, releaseDate, updatedAt: Date.now() },
+    {
+      title, posterPath, releaseDate, updatedAt: Date.now()
+    },
     { new: true },
+    // eslint-disable-next-line consistent-return
     (err, updatedMovie) => {
       if (err) {
         console.error(err);
@@ -195,6 +197,7 @@ app.put('/watchlist/:id', (req, res) => {
 app.delete('/watchlist/:id', (req, res) => {
   const movieId = req.params.id;
 
+  // eslint-disable-next-line consistent-return
   Movie.findOneAndDelete({ movieId }, (err, deletedMovie) => {
     if (err) {
       console.error(err);
@@ -206,8 +209,6 @@ app.delete('/watchlist/:id', (req, res) => {
     res.json({ message: 'Movie deleted successfully' });
   });
 });
-
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
