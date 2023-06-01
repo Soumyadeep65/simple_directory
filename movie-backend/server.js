@@ -10,6 +10,8 @@ app.get('/', (req, res) => {
   res.send('Hello from the server!');
 });
 
+// /movies get request to get a paginated, sortable list of movie objects
+
 app.get('/movies', (req, res) => {
   const { cursor = 1, count = 20, sort = 'popularity.desc',query } = req.query;
 
@@ -36,6 +38,27 @@ app.get('/movies', (req, res) => {
       }));
 
       res.json(movies);
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    });
+});
+
+//  /movies/:id get request to show the details of the full movie object
+
+app.get('/movies/:id', (req, res) => {
+  const movieId = req.params.id;
+
+  axios
+    .get(`https://api.themoviedb.org/3/movie/${movieId}`, {
+      params: {
+        api_key: API_KEY
+      }
+    })
+    .then(response => {
+      const movie = response.data;
+      res.json(movie);
     })
     .catch(error => {
       console.error(error);
