@@ -21,8 +21,10 @@
   },
   "homepage": "https://github.com/Soumyadeep65/simple_directory#readme",
   "dependencies": {
+    "babel-node": "^0.0.1-security",
     "express": "^4.18.2",
-    "mongoose": "^7.2.2"
+    "mongoose": "^7.2.2",
+    "nodemon": "^2.0.22"
   },
   "devDependencies": {
     "@babel/core": "^7.22.1",
