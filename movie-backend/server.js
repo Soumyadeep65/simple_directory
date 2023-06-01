@@ -11,18 +11,21 @@ app.get('/', (req, res) => {
 });
 
 app.get('/movies', (req, res) => {
-  const { cursor = 1, count = 20, sort = 'popularity.desc' } = req.query;
+  const { cursor = 1, count = 20, sort = 'popularity.desc',query } = req.query;
 
+  const queryParams = {
+    api_key: API_KEY,
+    page: cursor,
+    sort_by: sort,
+    include_adult: false,
+    include_video: false
+  };
+
+  if (query) {
+    queryParams.query = query;
+  }
   axios
-    .get(`https://api.themoviedb.org/3/discover/movie`, {
-      params: {
-        api_key: API_KEY,
-        page: cursor,
-        sort_by: sort,
-        include_adult: false,
-        include_video: false
-      }
-    })
+    .get('https://api.themoviedb.org/3/discover/movie', { params: queryParams })
     .then(response => {
       const movies = response.data.results.map(movie => ({
         id: movie.id,
