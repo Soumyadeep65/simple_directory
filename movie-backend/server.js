@@ -98,6 +98,12 @@ app.get('/movies', (req, res) => {
 app.get('/movies/:id', (req, res) => {
   const movieId = req.params.id;
 
+  // Check if the movie details are already cached
+  if (cache[movieId] && cache[movieId].expiry > Date.now()) {
+    const cachedData = cache[movieId].data;
+    res.json(cachedData);
+  }
+  else{
   axios
     .get(`https://api.themoviedb.org/3/movie/${movieId}`, {
       params: {
@@ -106,12 +112,18 @@ app.get('/movies/:id', (req, res) => {
     })
     .then(response => {
       const movie = response.data;
+      // Cache the movie details
+      cache[movieId] = {
+        data: movie,
+        expiry: Date.now() + CACHE_DURATION * 1000,
+      };
       res.json(movie);
     })
     .catch(error => {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
     });
+  }
 });
 
 // Watchlist CRUD - Store the movies added to watchlist into MongoDB
