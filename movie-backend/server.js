@@ -5,12 +5,19 @@ import axios from 'axios';
 import mongoose from 'mongoose';
 import { rateLimit } from 'express-rate-limit';
 import cors from 'cors';
+import https from 'https';
+import fs from 'fs';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const API_KEY = '71f6d6491ccd8a70c189ecc6dc85548b';
 const CACHE_DURATION = 60; // Cache duration in seconds
 const cache = {}; // In-memory cache
+
+const options = {
+  key: fs.readFileSync('/home/ubuntu/simple_directory/movie-backend/config/cert.key'),
+  cert: fs.readFileSync('/home/ubuntu/simple_directory/movie-backend/config/cert.crt')
+};
 
 const limiter = rateLimit({
   windowMs: 1000, // 1 second
@@ -228,4 +235,13 @@ const server = app.listen(PORT, () => {
 
   console.log('App listening at http://%s:%s', host, port);
 });
+
+const httpsServer = https.createServer(options, app);
+
+const HttpsPort = 8443;
+
+httpsServer.listen(HttpsPort, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
+
 module.exports = server;
