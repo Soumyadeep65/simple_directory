@@ -33,8 +33,8 @@ mongoose.connect('mongodb://localhost:27017/watchlist', {
 const movieSchema = new mongoose.Schema({
   movieId: { type: Number, required: true },
   title: { type: String, required: true },
-  posterPath: { type: String, required: true },
-  releaseDate: { type: Date, required: true },
+  posterPath: { type: String },
+  releaseDate: { type: Date },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

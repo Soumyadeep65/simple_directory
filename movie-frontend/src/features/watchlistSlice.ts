@@ -40,7 +40,7 @@ const initialState: MoviesState = {
 export const fetchMovieDetails = createAsyncThunk(
     'movies/fetchMovieDetails',
     async (movieId: number) => {
-      const response = await axios.get(`http://localhost:5000/movies/${movieId}`);
+      const response = await axios.get(process.env.REACT_APP_BACKEND_URL+`/movies/${movieId}`);
       return response.data;
     }
   );
@@ -48,7 +48,7 @@ export const fetchMovieDetails = createAsyncThunk(
 export const fetchMovies = createAsyncThunk(
     'movies/fetchMovies',
     async () => {
-      const response = await axios.get('http://localhost:5000/movies/');
+      const response = await axios.get(process.env.REACT_APP_BACKEND_URL+'/movies/');
       return response.data;
     }
   );
@@ -56,7 +56,7 @@ export const fetchMovies = createAsyncThunk(
 export const addToWatchlist = createAsyncThunk(
     'movies/addToWatchlist',
     async (movie: string) => {
-      await axios.post('http://localhost:5000/watchlist', JSON.parse(movie));
+      await axios.post(process.env.REACT_APP_BACKEND_URL+'/watchlist', JSON.parse(movie));
     }
   );
 

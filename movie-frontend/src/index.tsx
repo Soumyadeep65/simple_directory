@@ -21,7 +21,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/movies', {
+        const response = await axios.get(process.env.REACT_APP_BACKEND_URL+'/movies', {
           params: {
             sort: 'vote_average.desc', // Sort by top-rated movie first
             cursor: page.current,
@@ -40,7 +40,7 @@ const App: React.FC = () => {
   const loadMoreMovies = async () => {
     page.current += 1;
     try {
-      const response = await axios.get('http://localhost:5000/movies', {
+      const response = await axios.get(process.env.REACT_APP_BACKEND_URL+'/movies', {
         params: {
           sort: 'vote_average.desc',
           cursor: page.current,
