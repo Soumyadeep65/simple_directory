@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice,createAsyncThunk , PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store/index';
 
 interface MoviesState {
@@ -6,6 +6,8 @@ interface MoviesState {
   filteredMovies: Movie[];
   filters: Filters;
 }
+
+
 
 interface Movie {
   id: number;

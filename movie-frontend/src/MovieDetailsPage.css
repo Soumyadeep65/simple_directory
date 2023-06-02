@@ -1,0 +1,46 @@
+.movie-details {
+    margin: 20px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+  }
+  
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .language {
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .release-year {
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .budget {
+    font-size: 16px;
+    color: #333;
+  }
+
+  .overview {
+    font-size: 16px;
+    color: #333;
+  }
+
+  .add-to-watchlist {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .add-to-watchlist:hover {
+    background-color: #0056b3;
+  }

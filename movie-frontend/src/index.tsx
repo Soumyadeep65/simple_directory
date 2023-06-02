@@ -6,8 +6,11 @@ import { setMovies } from './features/moviesSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import MoviesFilter from './MoviesFilter';
 import { RootState } from './store/index';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
 import './index.css'
+import { Link } from 'react-router-dom';
+import MovieDetailsPage from './MovieDetailsPage';
 
 
 const App: React.FC = () => {
@@ -59,6 +62,7 @@ const App: React.FC = () => {
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [movies]);
 
   return (
@@ -73,6 +77,7 @@ const App: React.FC = () => {
             <p className="release-year">Release Year: {movie.releaseYear}</p>
             <p className="language">Language: {movie.original_language}</p>
             <p className="vote">Movie Ratings: {movie.vote_average}</p>
+            <Link to={`/movies/${movie.id}`} >View Details</Link>
           </div>
         ))}
       </div>
@@ -80,4 +85,14 @@ const App: React.FC = () => {
   );
 };
 
-ReactDOM.render( <Provider store={store}><App /></Provider>, document.getElementById('root'));
+ReactDOM.render( 
+<Provider store={store}>
+<Router>
+      <Routes>
+        <Route path="/" Component={App} />
+        <Route path="/movies/:movieId" element={<MovieDetailsPage movieId={''} />} />
+      </Routes>
+  </Router>
+</Provider>, 
+
+document.getElementById('root'));
