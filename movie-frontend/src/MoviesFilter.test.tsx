@@ -57,7 +57,7 @@ test('dispatches setFilter action on language select change', () => {
   const { getByLabelText } = render(<MoviesFilter />);
 
   const languageSelect = getByLabelText('Language:') as HTMLSelectElement;
-  fireEvent.change(languageSelect, { target: { value: 'sp' } });
+  fireEvent.change(languageSelect, { target: { value: 'fi' } });
 
-  expect(mockDispatch).toHaveBeenCalledWith(setFilter({ filter: 'language', value: 'sp' }));
+  expect(mockDispatch).toHaveBeenCalledWith(setFilter({ filter: 'language', value: 'fi' }));
 });
