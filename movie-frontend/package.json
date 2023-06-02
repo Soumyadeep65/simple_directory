@@ -20,7 +20,8 @@
   "scripts": {
     "start": "react-scripts start",
     "watch": "webpack --mode development --watch",
-    "build": "webpack --mode production",
+    "watch-prod": "webpack --mode production",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

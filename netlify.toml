@@ -1,0 +1,10 @@
+[build]
+command = "npm run build"
+publish = "movie-frontend/build"
+
+[build.environment]
+# Add any necessary environment variables
+
+[build.lifecycle]
+onBuild = "cd frontend && npm install && npm run build"
+
