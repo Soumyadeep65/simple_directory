@@ -16,9 +16,13 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
+app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/watchlist');
+mongoose.connect('mongodb://localhost:27017/watchlist', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 // Define Movie Schema
 const movieSchema = new mongoose.Schema({
@@ -39,7 +43,7 @@ app.get('/', (req, res) => {
 
 // /movies get request to get a paginated, sortable list of movie objects
 
-app.get('/movies', (req, res) => {
+app.get('/movies', async (req, res) => {
   let {
     // eslint-disable-next-line prefer-const
     cursor = 1, count = 20, sort = 'popularity.desc', query
@@ -72,7 +76,7 @@ app.get('/movies', (req, res) => {
     const cachedData = cache[cacheKey].data;
     res.json(cachedData);
   } else {
-    axios
+    await axios
       .get('https://api.themoviedb.org/3/discover/movie', { params: queryParams })
       .then((response) => {
         const movies = response.data.results.slice(startIndex, endIndex).map((movie) => ({
@@ -100,7 +104,7 @@ app.get('/movies', (req, res) => {
 
 //  /movies/:id get request to show the details of the full movie object
 
-app.get('/movies/:id', (req, res) => {
+app.get('/movies/:id', async (req, res) => {
   const movieId = req.params.id;
 
   // Check if the movie details are already cached
@@ -108,7 +112,7 @@ app.get('/movies/:id', (req, res) => {
     const cachedData = cache[movieId].data;
     res.json(cachedData);
   } else {
-    axios
+    await axios
       .get(`https://api.themoviedb.org/3/movie/${movieId}`, {
         params: {
           api_key: API_KEY
@@ -133,8 +137,8 @@ app.get('/movies/:id', (req, res) => {
 // Watchlist CRUD - Store the movies added to watchlist into MongoDB
 
 // GET /watchlist
-app.get('/watchlist', (req, res) => {
-  Movie.find()
+app.get('/watchlist', async (req, res) => {
+  await Movie.find()
     .sort({ createdAt: -1 })
     // eslint-disable-next-line consistent-return
     .exec((err, movies) => {
@@ -147,7 +151,7 @@ app.get('/watchlist', (req, res) => {
 });
 
 // POST /watchlist
-app.post('/watchlist', (req, res) => {
+app.post('/watchlist', async (req, res) => {
   const {
     movieId, title, posterPath, releaseDate
   } = req.body;
@@ -160,7 +164,7 @@ app.post('/watchlist', (req, res) => {
   });
 
   // eslint-disable-next-line consistent-return
-  movie.save((err, savedMovie) => {
+  await movie.save((err, savedMovie) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ error: 'Internal Server Error' });
@@ -170,7 +174,7 @@ app.post('/watchlist', (req, res) => {
 });
 
 // PUT /watchlist/:id
-app.put('/watchlist/:id', (req, res) => {
+app.put('/watchlist/:id', async (req, res) => {
   const movieId = req.params.id;
   const { title, posterPath, releaseDate } = req.body;
 
@@ -195,7 +199,7 @@ app.put('/watchlist/:id', (req, res) => {
 });
 
 // DELETE /watchlist/:id
-app.delete('/watchlist/:id', (req, res) => {
+app.delete('/watchlist/:id', async (req, res) => {
   const movieId = req.params.id;
 
   // eslint-disable-next-line consistent-return
