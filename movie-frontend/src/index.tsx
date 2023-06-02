@@ -1,4 +1,4 @@
-import React, { useEffect }  from 'react';
+import React, { useEffect,useRef  }  from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import store from './store/index';
@@ -7,19 +7,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import MoviesFilter from './MoviesFilter';
 import { RootState } from './store/index';
 import axios from 'axios';
+import './index.css'
 
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
-  const filteredMovies = useSelector((state: RootState) => state.movies.filteredMovies);
-
+  const movies = useSelector((state: RootState) => state.movies.movies);
+  const page = useRef(1);
   useEffect(() => {
-    // Fetch movies from API and dispatch setMovies action
     const fetchMovies = async () => {
-      // Replace with your API call to fetch movies
       try {
-        const response = await axios.get('http://localhost:5000/movies');
-        console.log(response)
+        const response = await axios.get('http://localhost:5000/movies', {
+          params: {
+            sort: 'vote_average.desc', // Sort by top-rated movie first
+            cursor: page.current,
+            count: 10, // Number of movies per page
+          },
+        });
         dispatch(setMovies(response.data));
       } catch (error) {
         console.error('Error fetching movies:', error);
@@ -29,16 +33,50 @@ const App: React.FC = () => {
     fetchMovies();
   }, [dispatch]);
 
+  const loadMoreMovies = async () => {
+    page.current += 1;
+    try {
+      const response = await axios.get('http://localhost:5000/movies', {
+        params: {
+          sort: 'vote_average.desc',
+          cursor: page.current,
+          count: 10,
+        },
+      });
+      dispatch(setMovies([...movies, ...response.data]));
+    } catch (error) {
+      console.error('Error loading more movies:', error);
+    }
+  };
+
+  const handleScroll = () => {
+    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      loadMoreMovies();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [movies]);
+
   return (
     <div>
-    <h1>Movies</h1>
-    <MoviesFilter />
-    <ul>
-      {filteredMovies.map((movie: { id: React.Key | null | undefined; title: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; }) => (
-        <li key={movie.id}>{movie.title}</li>
-      ))}
-    </ul>
-  </div>
+      <h1>Movies</h1>
+      <MoviesFilter />
+      <div className="container">
+        {movies.map((movie) => (
+          <div key={movie.id} className="movie">
+            <img src={"https://image.tmdb.org/t/p/w1280"+movie.poster_path} alt={movie.title} />
+            <h3 className="title">{movie.title}</h3>
+            <p className="release-year">Release Year: {movie.releaseYear}</p>
+            <p className="language">Language: {movie.original_language}</p>
+            <p className="vote">Movie Ratings: {movie.vote_average}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 

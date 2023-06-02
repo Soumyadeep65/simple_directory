@@ -12,6 +12,8 @@ interface Movie {
   title: string;
   releaseYear: number;
   original_language: string;
+  vote_average: number;
+  poster_path:string
 }
 
 interface Filters {
