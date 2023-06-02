@@ -6,5 +6,5 @@ publish = "movie-frontend/build"
 # Add any necessary environment variables
 
 [build.lifecycle]
-onBuild = "cd frontend && npm install && npm run build"
+onBuild = "cd movie-frontend && npm install && npm run build"
 
