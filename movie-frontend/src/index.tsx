@@ -17,6 +17,7 @@ import WatchlistCenter from './WatchListCenter';
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const movies = useSelector((state: RootState) => state.movies.movies);
+  const filteredMovies = useSelector((state: RootState) => state.movies.filteredMovies);
   const page = useRef(1);
   useEffect(() => {
     const fetchMovies = async () => {
@@ -73,7 +74,7 @@ const App: React.FC = () => {
       <MoviesFilter />
       <div className="container">
         
-        {movies.map((movie) => (
+        {filteredMovies.map((movie) => (
           <div key={movie.id} className="movie">
             <img src={"https://image.tmdb.org/t/p/w1280"+movie.poster_path} alt={movie.title} />
             <h3 className="title">{movie.title}</h3>
