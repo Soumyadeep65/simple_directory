@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/no-import-module-exports */
 import express from 'express';
 import axios from 'axios';
