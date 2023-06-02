@@ -11,6 +11,7 @@ import axios from 'axios';
 import './index.css'
 import { Link } from 'react-router-dom';
 import MovieDetailsPage from './MovieDetailsPage';
+import WatchlistCenter from './WatchListCenter';
 
 
 const App: React.FC = () => {
@@ -68,8 +69,10 @@ const App: React.FC = () => {
   return (
     <div>
       <h1>Movies</h1>
+      <Link to="/watchlist" className="watchlist-link">Go to Watchlist Center</Link>
       <MoviesFilter />
       <div className="container">
+        
         {movies.map((movie) => (
           <div key={movie.id} className="movie">
             <img src={"https://image.tmdb.org/t/p/w1280"+movie.poster_path} alt={movie.title} />
@@ -91,6 +94,7 @@ ReactDOM.render(
       <Routes>
         <Route path="/" Component={App} />
         <Route path="/movies/:movieId" element={<MovieDetailsPage movieId={''} />} />
+        <Route path="/watchlist" element={<WatchlistCenter />} />
       </Routes>
   </Router>
 </Provider>, 

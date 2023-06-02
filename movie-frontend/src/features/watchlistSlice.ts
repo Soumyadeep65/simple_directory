@@ -1,5 +1,6 @@
-import { createSlice,createAsyncThunk  } from '@reduxjs/toolkit';
+import { createSlice,createAsyncThunk,PayloadAction   } from '@reduxjs/toolkit';
 import axios from 'axios';
+
 
 
 interface Movie {
@@ -13,26 +14,41 @@ interface Movie {
     poster_path:string;
 }
 
+interface MovieWatched {
+    id: number;
+    title: string;
+    watched: boolean;
+  }
+
 
 interface MoviesState {
     movieDetail: Movie | null;
     loading: boolean,
     error: string | null , 
+    movies: MovieWatched[];
   }
   
 
 const initialState: MoviesState = {
     movieDetail: null,
     loading: false,
-    error: null
+    error: null,
+    movies: [],
 };
-
 
 
 export const fetchMovieDetails = createAsyncThunk(
     'movies/fetchMovieDetails',
     async (movieId: number) => {
       const response = await axios.get(`http://localhost:5000/movies/${movieId}`);
+      return response.data;
+    }
+  );
+
+export const fetchMovies = createAsyncThunk(
+    'movies/fetchMovies',
+    async () => {
+      const response = await axios.get('http://localhost:5000/movies/');
       return response.data;
     }
   );
@@ -59,15 +75,27 @@ export const addToWatchlist = createAsyncThunk(
         state.loading = false;
         state.error = action.payload;
       },
+      markAsWatched: (state, action: PayloadAction<number>) => {
+        const movieId = action.payload;
+        const movie = state.movies.find((item) => item.id === movieId);
+        if (movie) {
+          movie.watched = true;
+        }
+      },
     },
     extraReducers: (builder) => {
       builder.addCase(fetchMovieDetails.fulfilled, (state, action) => {
         state.movieDetail = action.payload;
       });
+      builder.addCase(fetchMovies.fulfilled, (state, action) => {
+        state.movies = action.payload;
+      });
     },
   });
+
+
   
-  export const { addToWatchlistStart, addToWatchlistSuccess, addToWatchlistFailure } = watchListSlice.actions;
+  export const { addToWatchlistStart, addToWatchlistSuccess, addToWatchlistFailure,markAsWatched } = watchListSlice.actions;
 
 
   

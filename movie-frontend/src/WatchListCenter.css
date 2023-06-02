@@ -1,0 +1,40 @@
+.watchlist-center {
+    padding: 20px;
+  }
+  
+  .watchlist-center__title {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .watchlist-center__movies {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .watchlist-center__movie {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .watchlist-center__movie-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .watchlist-center__mark-watched {
+    background-color: #ff5f5f;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .watchlist-center__mark-watched:hover {
+    background-color: #ff3f3f;
+  }
+  

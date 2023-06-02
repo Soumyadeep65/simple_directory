@@ -48,3 +48,25 @@ code {
 .movie .vote {
   color: #666;
 }
+
+.watchlist-link {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  background-color: #4CAF50;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.watchlist-link:hover {
+  background-color: #45a049;
+}
+
+.watchlist-link:focus {
+  outline: none;
+}
