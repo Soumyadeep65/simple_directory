@@ -3,6 +3,7 @@ import express from 'express';
 import axios from 'axios';
 import mongoose from 'mongoose';
 import { rateLimit } from 'express-rate-limit';
+import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,6 +16,9 @@ const limiter = rateLimit({
   max: 1000, // Maximum 1000 requests per second
 });
 
+app.use(cors({
+  origin: '*'
+}));
 app.use(limiter);
 app.use(express.json());
 
@@ -84,7 +88,9 @@ app.get('/movies', async (req, res) => {
           title: movie.title,
           poster_path: movie.poster_path,
           release_date: movie.release_date,
-          vote_average: movie.vote_average
+          releaseYear: parseInt(movie.release_date, 10),
+          vote_average: movie.vote_average,
+          original_language: movie.original_language
         }));
 
         // Save the data to the cache
