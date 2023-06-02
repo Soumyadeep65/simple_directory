@@ -1,5 +1,5 @@
 [build]
-command = "npm run build"
+command = "cd movie-frontend && npm install && npm run build"
 publish = "movie-frontend/build"
 
 [build.environment]
