@@ -241,7 +241,7 @@ const httpsServer = https.createServer(options, app);
 const HttpsPort = 8443;
 
 httpsServer.listen(HttpsPort, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server listening on port ${HttpsPort}`);
 });
 
 module.exports = server;
